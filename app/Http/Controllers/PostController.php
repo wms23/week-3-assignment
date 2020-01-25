@@ -14,8 +14,23 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::get();
+        if (auth()->guest()) {
+            $posts = Post::published()->get();
+        } else {
+            $user_id = auth()->user()->id;
+            // $posts = Post::published()
+            //     ->orWhere(function ($query) use ($user_id) {
+            //         $query->postOwner($user_id);
+            //     })
+            //     ->get();
+            $posts = Post::published()
+                ->orWhere
+                ->postOwner($user_id)
+                ->get();
+        }
+
         return view('post.index', compact('posts'));
+
     }
 
     /**
@@ -47,7 +62,8 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        //
+        $this->authorize('view', $post);
+        return view('post.show', compact('post'));
     }
 
     /**
