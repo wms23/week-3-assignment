@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Post;
 use Illuminate\Http\Request;
+use App\Http\Requests\PostSaveRequest;
+use App\Traits\Notify;
 
 class PostController extends Controller
 {
+    use Notify;
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +18,7 @@ class PostController extends Controller
     public function index()
     {
         if (auth()->guest()) {
-            $posts = Post::published()->get();
+            $posts = Post::published()->paginate(5);
         } else {
             $user_id = auth()->user()->id;
             // $posts = Post::published()
@@ -26,7 +29,7 @@ class PostController extends Controller
             $posts = Post::published()
                 ->orWhere
                 ->postOwner($user_id)
-                ->get();
+                ->paginate(5);
         }
 
         return view('post.index', compact('posts'));
@@ -74,7 +77,7 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        //
+        // $this->authorize('view', $post);
     }
 
     /**
@@ -84,9 +87,15 @@ class PostController extends Controller
      * @param  \App\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Post $post)
-    {
-        //
+
+    public function update(PostSaveRequest $request, Post $post)
+    {        
+        $this->authorize('update', $post);
+        $post->update($request->validated());
+        // $post->updated_by = auth()->user()-id;
+        // $post->save();
+        $this->notifyAdminViaSlack("This message will send to admin");        
+        return redirect()->back();        
     }
 
     /**

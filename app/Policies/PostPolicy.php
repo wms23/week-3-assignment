@@ -33,14 +33,13 @@ class PostPolicy
         //Guest User
         if ($user === null) {
             return $post->is_published;
-        } 
+        }
         //Authenticated user
         elseif (!$post->is_published) {
             //Only display the post content
             //If the author is current user
             return $user->id === $post->author_id;
-        }
-        else{
+        } else {
             return true;
         }
     }
@@ -65,7 +64,7 @@ class PostPolicy
      */
     public function update(User $user, Post $post)
     {
-        //
+        return $user->id === $post->author_id;
     }
 
     /**
