@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Post;
-use Illuminate\Http\Request;
 use App\Http\Requests\PostSaveRequest;
+use App\Mail\PostUpdate;
+use App\Post;
 use App\Traits\Notify;
+use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
@@ -66,6 +67,16 @@ class PostController extends Controller
     public function show(Post $post)
     {
         $this->authorize('view', $post);
+        \Mail::to('th.ucsy@gmail.com')->send(
+            new PostUpdate($post)
+        );
+
+        if (\Cache::get('post' . $post->id)) {
+            dump(\Cache::get('post' . $post->id));
+        } else {
+            \Cache::put('post' . $post->id, $post, 100);
+        }
+
         return view('post.show', compact('post'));
     }
 
@@ -89,13 +100,17 @@ class PostController extends Controller
      */
 
     public function update(PostSaveRequest $request, Post $post)
-    {        
+    {
         $this->authorize('update', $post);
         $post->update($request->validated());
         // $post->updated_by = auth()->user()-id;
         // $post->save();
-        $this->notifyAdminViaSlack("This message will send to admin");        
-        return redirect()->back();        
+        \Mail::to('th.ucsy@gmail.com')->send(
+            new PostUpdate()
+        );
+
+        // $this->notifyAdminViaSlack("This message will send to admin");
+        return redirect()->back();
     }
 
     /**
