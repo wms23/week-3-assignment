@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Post extends Model
 {
-    protected $fillable = ['title', 'content', 'is_published'];
+    protected $fillable = ['title', 'content', 'is_published','author_id'];
 
     public function author()
     {
@@ -16,7 +16,7 @@ class Post extends Model
     public function getExcerptAttribute()
     {
         $exploded_string = explode(" ", $this->content);
-        return collect($exploded_string)->take(20)->join(' ') . ' ...';
+        return collect($exploded_string)->take(30)->join(' ') . ' ...';
     }
 
     public function scopePublished($query)

@@ -51,8 +51,8 @@ class PostPolicy
      * @return mixed
      */
     public function create(User $user)
-    {
-        //
+    {        
+        return true;
     }
 
     /**

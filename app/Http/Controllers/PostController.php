@@ -44,7 +44,8 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        $this->authorize('create', POST::class);
+        return view('post.create');
     }
 
     /**
@@ -53,9 +54,17 @@ class PostController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(PostSaveRequest $request)
     {
-        //
+        $this->authorize('create', POST::class);
+
+        $data = $request->validated();
+        $data['author_id'] = \Auth::user()->id;
+        $post = Post::create($data);
+
+        \Cache::forever('post.' . $post->id,$post);
+
+        return redirect(route('post.show', $post->id));
     }
 
     /**
@@ -64,18 +73,18 @@ class PostController extends Controller
      * @param  \App\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function show(Post $post)
+    public function show($post)
     {
-        $this->authorize('view', $post);
-        \Mail::to('th.ucsy@gmail.com')->send(
-            new PostUpdate($post)
-        );
+        $post_id = $post;
 
-        if (\Cache::get('post' . $post->id)) {
-            dump(\Cache::get('post' . $post->id));
+        if (\Cache::get('post.' . $post_id)) {
+            $post = \Cache::get('post.' . $post_id);
         } else {
-            \Cache::put('post' . $post->id, $post, 100);
+            $post = Post::find($post_id);
+            \Cache::forever('post.' . $post->id, $post);
         }
+
+        $this->authorize('view', $post);              
 
         return view('post.show', compact('post'));
     }
@@ -103,10 +112,8 @@ class PostController extends Controller
     {
         $this->authorize('update', $post);
         $post->update($request->validated());
-        // $post->updated_by = auth()->user()-id;
-        // $post->save();
         \Mail::to('th.ucsy@gmail.com')->send(
-            new PostUpdate()
+            new PostUpdate($post)
         );
 
         // $this->notifyAdminViaSlack("This message will send to admin");
