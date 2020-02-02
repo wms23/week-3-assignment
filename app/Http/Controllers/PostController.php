@@ -8,10 +8,16 @@ use App\Mail\PostCreate;
 use App\Post;
 use App\Traits\Notify;
 use Illuminate\Http\Request;
+use App\Repositories\PostRepository;
 
 class PostController extends Controller
 {
     use Notify;
+
+    public function __construct(PostRepository $repository){
+        $this->repository = $repository;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -80,14 +86,9 @@ class PostController extends Controller
      */
     public function show($post)
     {
+        
         $post_id = $post;
-
-        if (\Cache::get('post.' . $post_id)) {
-            $post = \Cache::get('post.' . $post_id);
-        } else {
-            $post = Post::find($post_id);
-            \Cache::forever('post.' . $post->id, $post);
-        }
+        $post = $this->repository->find($post_id);       
 
         $this->authorize('view', $post);              
 
