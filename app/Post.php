@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Post extends Model
 {
-    protected $fillable = ['title', 'content', 'is_published','author_id'];
+    protected $fillable = ['title', 'content', 'is_published', 'author_id'];
 
     public function author()
     {
@@ -24,8 +24,13 @@ class Post extends Model
         return $query->where('is_published', true);
     }
 
-    public function scopePostOwner($query, $login_user_id)
+    public function scopePostOwner($query)
     {
-        return $query->where('author_id', $login_user_id);
+        return $query->where('author_id', \Auth::user()->id);
+    }
+
+    public function scopeDefaultOrder($query)
+    {
+        return $query->orderByDesc('created_at');
     }
 }
