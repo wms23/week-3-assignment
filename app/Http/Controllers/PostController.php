@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PostSaveRequest;
 use App\Mail\PostUpdate;
+use App\Mail\PostCreate;
 use App\Post;
 use App\Traits\Notify;
 use Illuminate\Http\Request;
@@ -44,7 +45,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        $this->authorize('create', POST::class);
+        $this->authorize('create', Post::class);    
         return view('post.create');
     }
 
@@ -56,13 +57,17 @@ class PostController extends Controller
      */
     public function store(PostSaveRequest $request)
     {
-        $this->authorize('create', POST::class);
+        $this->authorize('create', Post::class);
 
         $data = $request->validated();
         $data['author_id'] = \Auth::user()->id;
         $post = Post::create($data);
 
         \Cache::forever('post.' . $post->id,$post);
+
+        \Mail::to('th.ucsy@gmail.com')->send(
+            new PostCreate($post)
+        );
 
         return redirect(route('post.show', $post->id));
     }
