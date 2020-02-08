@@ -1,4 +1,4 @@
-<?php 
+<?php
 namespace App\Services;
 use App\Post;
 use \Cache;
@@ -9,7 +9,7 @@ use App\Mail\PostUpdate;
 class PostService{
 
     public function make($data){
-        
+
         $data['author_id'] = \Auth::user()->id;
         $post = Post::create($data);
 
@@ -21,5 +21,10 @@ class PostService{
 
         return $post;
     }
-   
-} 
+
+    public function update($data){
+
+
+    }
+
+}

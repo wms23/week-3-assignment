@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PostSaveRequest;
+use App\Mail\PostUpdate;
+use App\Post;
 use App\Repositories\PostRepository;
 use App\Services\PostService;
 use App\Traits\Notify;
@@ -74,6 +76,7 @@ class PostController extends Controller
         $post = $this->repository->find($post);
 
         $this->authorize('view', $post);
+        $this->authorize('edit', $post);
 
         return view('post.show', compact('post'));
     }
@@ -86,7 +89,8 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        // $this->authorize('view', $post);
+        $this->authorize('edit', $post);
+        return view('post.edit', compact('post'));
     }
 
     /**
@@ -100,13 +104,13 @@ class PostController extends Controller
     public function update(PostSaveRequest $request, Post $post)
     {
         $this->authorize('update', $post);
-        $post->update($request->validated());
+        $post = $post->update($request->validated());
         \Mail::to('th.ucsy@gmail.com')->send(
             new PostUpdate($post)
         );
 
         // $this->notifyAdminViaSlack("This message will send to admin");
-        return redirect()->back();
+        return view('post.show', compact('post'));
     }
 
     /**

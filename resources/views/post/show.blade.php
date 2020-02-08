@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    
+
     <div>
         <h2>{{$post->title}}</h2>
         <p>Written by : <strong>{{$post->author->name}}</strong> </p>
@@ -18,6 +18,12 @@
         <p>{!! nl2br($post->content) !!}</p>
     </div>
     <a href="{{route('post.index')}}">Back to list</a>
+    @guest
+        @else
+    @if(\Auth::guard('web')->user()->id === $post->author_id)
+    <a href="{{route('post.edit',$post->id)}}" class='btn btn-primary'>Edit</a>
+    @endif
+    @endguest
 
 
     @endsection

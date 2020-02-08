@@ -1948,7 +1948,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['name', 'placeholder']
+  props: ['name', 'placeholder', 'value']
 });
 
 /***/ }),
@@ -37378,10 +37378,10 @@ var render = function() {
       attrs: {
         type: "text",
         id: _vm.name,
-        value: "",
         name: _vm.name,
         placeholder: _vm.placeholder
-      }
+      },
+      domProps: { value: _vm.value }
     })
   ])
 }
@@ -49789,8 +49789,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /media/thet/Data/PADC/PADC 9 - Laravel/Repo/Advance/Week 3/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /media/thet/Data/PADC/PADC 9 - Laravel/Repo/Advance/Week 3/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /var/www/html/padc9-advance-laravel-week3/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /var/www/html/padc9-advance-laravel-week3/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

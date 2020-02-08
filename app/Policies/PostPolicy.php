@@ -45,13 +45,30 @@ class PostPolicy
     }
 
     /**
+     * Determine whether the user can view the post.
+     *
+     * @param  \App\User  $user
+     * @param  \App\Post  $post
+     * @return mixed
+     */
+    public function edit(?User $user, Post $post)
+    {
+        if ($user === null) {
+            return $post->is_published;
+        }elseif ($user->id === $post->author_id) {
+            return true;
+        } else {
+            return $post->author_id;
+        }
+    }
+    /**
      * Determine whether the user can create posts.
      *
      * @param  \App\User  $user
      * @return mixed
      */
     public function create(User $user)
-    {        
+    {
         return true;
     }
 
